@@ -1,58 +1,16 @@
 const Surgery = require("../model/Surgerys");
-const httpStatusText = require("../utils/httpStatusText");
-const { validationResult } = require("express-validator");
 const asyncWrapper = require("../middleware/asyncWrapper");
-const appError = require("../utils/appError");
+const controllers = require("../middleware/controllers");
 
-const getDoctors = asyncWrapper(async (req, res) => {
-  const doctors = await Surgery.find({}, { __v: false });
-  res.status(200).json({ status: httpStatusText.SUCCESS, data: { doctors } });
-});
+const getDoctors = asyncWrapper(controllers.funGetDoctors(Surgery));
 
-const getDoctor = asyncWrapper(async (req, res, next) => {
-  const doctor = await Surgery.findById(req.params.id);
-  if (!doctor) {
-    const error = appError.create(httpStatusText.FAIL, 404, "course not found");
-    return next(error);
-  } else {
-    res.status(200).json({ status: httpStatusText.SUCCESS, data: { doctor } });
-  }
-});
+const getDoctor = asyncWrapper(controllers.funGetDoctor(Surgery));
 
-const addDoctor = asyncWrapper(async (req, res, next) => {
-  const { name, email, phone, specialization, msg } = req.body;
+const addDoctor = asyncWrapper(controllers.funAddDoctor(Surgery));
 
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = appError.create(httpStatusText.FAIL, 400, errors.array());
-    return next(error);
-  }
+const editDoctor = asyncWrapper(controllers.funEditDoctor(Surgery));
 
-  const newDoctor = new Surgery({
-    name,
-    email,
-    phone,
-    specialization,
-    msg,
-    avatar: req.file.filename
-  })
-
-  await newDoctor.save();
-  res.status(200).json({ status: httpStatusText.SUCCESS, data: { newDoctor } });
-});
-
-const editDoctor = asyncWrapper(async (req, res) => {
-  const doctor = await Surgery.updateOne(
-    { _id: req.params.id },
-    { $set: { ...req.body } }
-  );
-  res.json({ status: httpStatusText.SUCCESS, data: { doctor } });
-});
-
-const deleteDoctor = asyncWrapper(async (req, res) => {
-  await Surgery.deleteOne({ _id: req.params.id });
-  res.status(200).json({ status: httpStatusText.SUCCESS, data: null });
-});
+const deleteDoctor = asyncWrapper(controllers.funDeleteDoctor(Surgery));
 
 module.exports = {
   getDoctors,
@@ -61,4 +19,3 @@ module.exports = {
   editDoctor,
   deleteDoctor,
 };
-
