@@ -30,14 +30,25 @@ const addVisit = asyncWrapper(async (req, res, next) => {
         return next(error);
     }
 
+    let newAttend;
+    try {
+        // تحويل السلسلة attend إلى كائن JSON
+        newAttend = JSON.parse(attend);
+    } catch (error) {
+        // إذا فشل التحويل، يمكنك التعامل مع الخطأ هنا
+        console.error('Error parsing JSON in attend:', error);
+        return res.status(400).json({ status: httpStatusText.FAIL, message: 'Invalid JSON format in attend' });
+    }
+
     const newVisit = new Visit({
-        specialization, doctor, bookingDate, attend, check, price, idUser, diagnosis
+        specialization, doctor, bookingDate, attend: newAttend, check, price, idUser, diagnosis
     });
 
     await newVisit.save();
     res.status(200).json({ status: httpStatusText.SUCCESS, data: { newVisit } });
 
 });
+
 
 const editVisit = asyncWrapper(async (req, res) => {
     const { check, diagnosis } = req.body;

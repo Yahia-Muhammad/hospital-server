@@ -33,7 +33,7 @@ const bookSchema = new mongoose.Schema({
     },
 
     attend: {
-        type: String,
+        type: Object,
         required: true,
     },
 

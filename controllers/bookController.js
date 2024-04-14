@@ -30,14 +30,25 @@ const addBook = asyncWrapper(async (req, res, next) => {
         return next(error);
     }
 
+    let newAttend;
+    try {
+        // تحويل السلسلة attend إلى كائن JSON
+        newAttend = JSON.parse(attend);
+    } catch (error) {
+        // إذا فشل التحويل، يمكنك التعامل مع الخطأ هنا
+        console.error('Error parsing JSON in attend:', error);
+        return res.status(400).json({ status: httpStatusText.FAIL, message: 'Invalid JSON format in attend' });
+    }
+
     const newBook = new Book({
-        name, gendr, state, date, phone, email, attend, specialization, doctor, bookingDate, check, price, roleId, reservationNum, idUser, idVisit
+        name, gendr, state, date, phone, email, attend: newAttend, specialization, doctor, bookingDate, check, price, roleId, reservationNum, idUser, idVisit
     });
 
     await newBook.save();
     res.status(200).json({ status: httpStatusText.SUCCESS, data: { newBook } });
 
 });
+
 
 const editBook = asyncWrapper(async (req, res) => {
     const { check, diagnosis } = req.body;

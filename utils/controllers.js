@@ -37,6 +37,16 @@ const funAddDoctor = (model) => {
       return next(error);
     }
 
+    let newAttend;
+    try {
+      // تحويل كل عنصر في المصفوفة attend إلى كائن JSON
+      newAttend = attend.map(item => JSON.parse(item));
+    } catch (error) {
+      // إذا فشل التحويل، يمكنك التعامل مع الخطأ هنا
+      console.error('Error parsing JSON in attend array:', error);
+      return res.status(400).json({ status: httpStatusText.FAIL, message: 'Invalid JSON format in attend array' });
+    }
+
     const newDoctorData = {
       name,
       gendr,
@@ -45,7 +55,7 @@ const funAddDoctor = (model) => {
       specialization,
       title,
       msg,
-      attend,
+      attend: newAttend,
       price,
     };
 
@@ -59,6 +69,7 @@ const funAddDoctor = (model) => {
     res.status(200).json({ status: httpStatusText.SUCCESS, data: { newDoctor } });
   };
 };
+
 
 const funEditDoctor = (model) => {
   return async (req, res) => {

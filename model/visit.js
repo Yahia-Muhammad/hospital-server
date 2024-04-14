@@ -17,7 +17,7 @@ const visitSchema = new mongoose.Schema({
     },
 
     attend: {
-        type: String,
+        type: Object,
         required: true,
     },
 
