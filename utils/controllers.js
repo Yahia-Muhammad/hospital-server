@@ -20,9 +20,7 @@ const funGetDoctor = (model) => {
       );
       return next(error);
     } else {
-      res
-        .status(200)
-        .json({ status: httpStatusText.SUCCESS, data: { doctor } });
+      res.status(200).json({ status: httpStatusText.SUCCESS, data: { doctor } });
     }
   };
 };
@@ -70,12 +68,25 @@ const funAddDoctor = (model) => {
   };
 };
 
-
 const funEditDoctor = (model) => {
   return async (req, res) => {
     const { name, gendr, email, phone, specialization, title, msg, attend, price } = req.body;
 
-    let updateFields = { name, gendr, email, phone, specialization, title, msg, attend, price };
+    let updateFields = { name, gendr, email, phone, specialization, title, msg, price };
+
+    if (attend) {
+      let newAttend;
+      try {
+        // تحويل كل عنصر في المصفوفة attend إلى كائن JSON
+        newAttend = attend.map(item => JSON.parse(item));
+        updateFields.attend = newAttend;
+      } catch (error) {
+        // إذا فشل التحويل، يمكنك التعامل مع الخطأ هنا
+        console.error('Error parsing JSON in attend array:', error);
+        return res.status(400).json({ status: httpStatusText.FAIL, message: 'Invalid JSON format in attend array' });
+      }
+    }
+
     if (req.file && req.file.filename) {
       updateFields.avatar = req.file.filename;
     }

@@ -49,5 +49,6 @@ module.exports = () => {
       type: String,
       default: "default-profile.jpg",
     },
+
   };
 };

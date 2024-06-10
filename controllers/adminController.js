@@ -17,18 +17,26 @@ const getAdmins = asyncWrapper(async (req, res) => {
 const getAdmin = asyncWrapper(async (req, res, next) => {
   const admin = await Admin.findById(req.params.id);
   if (!admin) {
+
     const error = appError.create(httpStatusText.FAIL, 404, "admin not found");
     return next(error);
+
   } else {
+
     res.status(200).json({ status: httpStatusText.SUCCESS, data: { admin } });
+
   }
 });
 
 const addAdmin = asyncWrapper(async (req, res, next) => {
+
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
+
     const error = appError.create(httpStatusText.FAIL, 400, errors.array());
     return next(error);
+
   }
 
   const newAdmin = new Admin(req.body);
@@ -41,11 +49,13 @@ const editAdmin = asyncWrapper(async (req, res) => {
     { _id: req.params.id },
     { $set: { ...req.body } }
   );
+
   res.json({ status: httpStatusText.SUCCESS, data: { admin } });
 });
 
 const deleteAdmin = asyncWrapper(async (req, res) => {
   await Admin.deleteOne({ _id: req.params.id });
+
   res.status(200).json({ status: httpStatusText.SUCCESS, data: null });
 });
 
@@ -114,14 +124,19 @@ const login = asyncWrapper(async (req, res, next) => {
   if (getAdmin && matchedPassword) {
 
     // logged in success
+
     const token = await generateJwt({ email: getAdmin.email, id: getAdmin._id, role: getAdmin.role });
+
     const id = getAdmin._id
     const role = getAdmin.role;
     res.status(200).json({ status: httpStatusText.SUCCESS, data: { token, id, role } });
 
+
   } else {
+
     const error = appError.create(httpStatusText.ERROR, 500, "somthing wrong");
     return next(error);
+
   }
 });
 
